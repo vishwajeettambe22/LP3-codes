@@ -1,0 +1,789 @@
+Prac no 1 
+
+class Fibonacci {
+
+    static int count = 0;
+
+    // Recursive method
+    static int recursive(int n) {
+        count++;
+        if (n <= 1)
+            return n;
+        return recursive(n - 1) + recursive(n - 2);
+    }
+
+    // Non-recursive method
+    static void nonRecursive(int n) {
+        int a = 0, b = 1, c, count = 0;
+
+        for (int i = 0; i < n; i++) {
+            System.out.print(a + " ");
+            c = a + b;
+            a = b;
+            b = c;
+            count++;
+        }
+        System.out.println("\nStep Count: " + count);
+    }
+
+    public static void main(String[] args) {
+        int n = 5;
+
+        System.out.println("Non-Recursive:");
+        nonRecursive(n);
+
+        System.out.println("Recursive:");
+        count = 0;
+
+        for (int i = 0; i < n; i++)
+            System.out.print(recursive(i) + " ");
+
+        System.out.println("\nStep Count: " + count);
+    }
+}
+
+
+
+PRAC NO 2 
+
+
+
+n = int(input("Enter the numbers of items: "))
+
+profit = []
+weight = []
+ratio = []
+
+for i in range(n):
+    print()
+    p = float(input("Enter Profit of item " + str(i+1) + " : "))
+    w = float(input("Enter Weight of item " + str(i+1) + " : "))
+
+    profit.append(p)
+    weight.append(w)
+
+    ratio.append(p / w)
+
+
+# Sorting according to profit/weight ratio
+for i in range(n-1):
+    for j in range(i+1, n):
+        if ratio[i] < ratio[j]:
+
+            ratio[i], ratio[j] = ratio[j], ratio[i]
+            profit[i], profit[j] = profit[j], profit[i]
+            weight[i], weight[j] = weight[j], weight[i]
+
+
+print()
+capacity = float(input("Enter the capacity: "))
+
+maxprofit = 0
+
+for i in range(n):
+
+    if capacity >= weight[i]:
+        maxprofit += profit[i]
+        capacity -= weight[i]
+
+    else:
+        maxprofit += ratio[i] * capacity
+        break
+
+
+print()
+print("Maximum profit:", maxprofit)
+
+
+
+
+PRAC NO 3 
+
+n = int(input("Enter the numbers of terms: "))
+
+profit = []
+weight = []
+for i in range (n):
+    p = int(input("Enter profit for item: "))
+    w = int(input("Enter weight for item: "))
+
+    profit.append(p)
+    weight.append(w)
+
+W = int(input("Enter capacity: "))
+
+dp = [[0 for j in range(W+1)] for i in range(n+1)]
+
+for i in range(1,n+1):
+    for w in range(1,W+1):
+        if weight[i-1] <= w :
+            dp[i][w] = max(profit[i-1] + dp[i-1][w - weight[i-1]],dp[i-1][w])
+        else:
+            dp[i][w] = dp[i-1][w]
+
+print("The maximum profit is: ",dp[n][W])
+
+
+
+
+PRAC NO 4 
+
+
+
+n = int(input("Enter the numbers of items: "))
+
+profit = []
+weight = []
+ratio = []
+
+for i in range(n):
+    print()
+    p = float(input("Enter Profit of item " + str(i+1) + " : "))
+    w = float(input("Enter Weight of item " + str(i+1) + " : "))
+
+    profit.append(p)
+    weight.append(w)
+
+    ratio.append(p / w)
+
+
+# Sorting according to profit/weight ratio
+for i in range(n-1):
+    for j in range(i+1, n):
+        if ratio[i] < ratio[j]:
+
+            ratio[i], ratio[j] = ratio[j], ratio[i]
+            profit[i], profit[j] = profit[j], profit[i]
+            weight[i], weight[j] = weight[j], weight[i]
+
+
+print()
+capacity = float(input("Enter the capacity: "))
+
+maxprofit = 0
+
+for i in range(n):
+
+    if capacity >= weight[i]:
+        maxprofit += profit[i]
+        capacity -= weight[i]
+
+    else:
+        maxprofit += ratio[i] * capacity
+        break
+
+
+print()
+print("Maximum profit:", maxprofit)
+
+
+
+PRAC NO 5 
+
+
+
+import threading
+import time
+
+# Define matrices directly
+A = [
+    [1, 2, 3],
+    [1, 5, 1],
+    [3, 4, 5]
+]
+
+B = [
+    [4, 7, 6],
+    [2, 9, 9],
+    [5, 1, 1]
+]
+
+# Normal Matrix Multiplication
+def normal_multiply(A, B):
+    rows = len(A)
+    cols = len(B[0])
+    common = len(B)
+
+    C = [[0 for j in range(cols)] for i in range(rows)]
+
+    for i in range(rows):
+        for j in range(cols):
+            for k in range(common):
+                C[i][j] += A[i][k] * B[k][j]
+
+    return C
+
+
+# Function for each thread
+def multiply_row(A, B, C, row):
+    for j in range(len(B[0])):
+        for k in range(len(B)):
+            C[row][j] += A[row][k] * B[k][j]
+
+
+# Multithreaded Matrix Multiplication
+def threaded_multiply(A, B):
+    rows = len(A)
+    cols = len(B[0])
+
+    C = [[0 for j in range(cols)] for i in range(rows)]
+
+    threads = []
+
+    for i in range(rows):
+        t = threading.Thread(
+            target=multiply_row,
+            args=(A, B, C, i)
+        )
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    return C
+
+
+# Check matrix dimensions
+if len(A[0]) != len(B):
+    print("Matrix multiplication not possible!")
+
+else:
+    # Normal multiplication
+    start = time.perf_counter()
+    C1 = normal_multiply(A, B)
+    normal_time = time.perf_counter() - start
+
+    # Multithreaded multiplication
+    start = time.perf_counter()
+    C2 = threaded_multiply(A, B)
+    thread_time = time.perf_counter() - start
+
+    print("Matrix A:")
+    for row in A:
+        print(row)
+
+    print("\nMatrix B:")
+    for row in B:
+        print(row)
+
+    print("\nNormal Matrix Multiplication:")
+    for row in C1:
+        print(row)
+
+    print("\nMultithreaded Matrix Multiplication:")
+    for row in C2:
+        print(row)
+
+    print("\nPerformance Comparison:")
+    print("Normal Time:", normal_time, "seconds")
+    print("Thread Time:", thread_time, "seconds")
+
+
+
+
+
+PRAC NO 6 
+
+
+
+
+
+import kagglehub import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns from sklearn.model_selection 
+import train_test_split from sklearn.preprocessing 
+import StandardScaler from sklearn.linear_model 
+import LinearRegression from sklearn.ensemble 
+import RandomForestRegressor from sklearn.metrics 
+import r2_score, mean_squared_error, mean_absolute_error
+path = kagglehub.dataset_download("yasserh/uber-fares-dataset")
+df = pd.read_csv(path + "/uber.csv")
+df.head()
+df.dropna(inplace=True)
+df.drop_duplicates(inplace=True)
+df.drop(columns=["Unnamed: 0", "key"], errors="ignore", inplace=True)
+df["pickup_datetime"] = pd.to_datetime(
+ df["pickup_datetime"], errors="coerce", utc=True
+) df.dropna(subset=["pickup_datetime"], inplace=True)
+df["hour"] = df["pickup_datetime"].dt.hour
+df["day"] = df["pickup_datetime"].dt.day
+df["month"] = df["pickup_datetime"].dt.month
+df["year"] = df["pickup_datetime"].dt.year
+df["dayofweek"] = df["pickup_datetime"].dt.dayofweek
+df.drop(columns=["pickup_datetime"], inplace=True)
+df.info()
+def haversine(lat1, lon1, lat2, lon2):
+    lat1, lon1, lat2, lon2 = map(np.radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+  a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2)**2
+    return 6371 * 2 * np.arcsin(np.sqrt(a))
+df["distance_km"] = haversine(
+    df["pickup_latitude"], df["pickup_longitude"],
+    df["dropoff_latitude"], df["dropoff_longitude"]
+) df.head()
+plt.figure(figsize=(12, 4))
+for i, col in enumerate(["fare_amount", "distance_km", "passenger_count"]):
+    plt.subplot(1, 3, i + 1)
+    sns.boxplot(y=df[col])
+    plt.title(col)
+plt.tight_layout() plt.show()
+df = df[
+  (df["fare_amount"].between(2.5, 100)) &    (df["distance_km"].between(0.1, 100)) &
+    (df["passenger_count"].between(1, 6)) &    (df["pickup_latitude"].between(40, 42)) &
+  (df["pickup_longitude"].between(-75, -72)) &    (df["dropoff_latitude"].between(40, 42)) &
+  (df["dropoff_longitude"].between(-75, -72))
+].copy()
+df.reset_index(drop=True, inplace=True)
+print("Dataset shape after cleaning:", df.shape)
+plt.figure(figsize=(12, 4))
+for i, col in enumerate(["fare_amount", "distance_km", "passenger_count"]):
+    plt.subplot(1, 3, i + 1)
+    sns.boxplot(y=df[col])
+    plt.title(col)
+plt.tight_layout()
+plt.show()
+plt.figure(figsize=(10, 6))
+sns.heatmap(df.corr(numeric_only=True), annot=True, cmap="coolwarm", fmt=".2f")
+sns.heatmap(df.corr(numeric_only=True), annot=True, cmap="coolwarm", fmt=".2f") plt.title("Correlation Heatmap")
+plt.show()
+print(df.corr(numeric_only=True)["fare_amount"].sort_values(ascending=False))
+features = [    "distance_km", "passenger_count", "hour",    "day", "month", "year", "dayofweek" ]
+X = df[features] y = df["fare_amount"]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42 )
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+print("Training data:", X_train.shape) print("Testing data:", X_test.shape)
+lr = LinearRegression()
+lr.fit(X_train_scaled, y_train)
+lr_pred = lr.predict(X_test_scaled)
+print("Linear Regression")
+print("R2 Score:", r2_score(y_test, lr_pred))
+print("MSE:", mean_squared_error(y_test, lr_pred))
+print("RMSE:", np.sqrt(mean_squared_error(y_test, lr_pred)))
+print("MAE:", mean_absolute_error(y_test, lr_pred))
+results = pd.DataFrame({
+    "Model": ["Linear Regression", "Random Forest"],
+    "R2 Score": [
+        r2_score(y_test, lr_pred),
+        r2_score(y_test, rf_pred)
+    ],    "RMSE": [
+        mean_absolute_error(y_test, lr_pred),
+        mean_absolute_error(y_test, rf_pred)    ]
+})
+print(results)
+
+
+sample = pd.DataFrame([{
+    "distance_km": 5.5,    "passenger_count": 2,    "hour": 18,    "day": 15,    "month": 8,    "year": 2014,    "dayofweek": 4 }])
+lr_fare = lr.predict(scaler.transform(sample))[0]
+rf_fare = rf.predict(sample)[0]
+print("Linear Regression Fare:", round(lr_fare, 2))
+print("Random Forest Fare:", round(rf_fare, 2))
+
+
+
+
+
+PRAC NO 7 
+
+
+
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.pipeline import make_pipeline 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.svm import LinearSVC 
+from sklearn.metrics 
+import (
+  accuracy_score, precision_score, recall_score,
+    f1_score, confusion_matrix, classification_report)
+
+df = pd.read_csv("emails.csv")
+print("Dataset shape:", df.shape)
+print(df.head())
+
+
+df.dropna(inplace=True)
+df.drop_duplicates(inplace=True)
+X = df.drop(columns=["Email No.", "Prediction"], errors="ignore")
+y = df["Prediction"]
+
+print("Features shape:", X.shape)
+print("Target distribution:\n", y.value_counts())
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+
+knn = make_pipeline(
+    StandardScaler(),
+    KNeighborsClassifier(n_neighbors=7)
+)
+knn.fit(X_train, y_train)
+knn_pred = knn.predict(X_test)
+print("KNN Classification Report")
+print(classification_report(y_test, knn_pred, zero_division=0))
+
+
+from sklearn.svm import SVC
+svm = make_pipeline(
+    StandardScaler(),
+    SVC(kernel="linear", C=1.0)
+)
+) svm.fit(X_train, y_train)
+svm_pred = svm.predict(X_test)
+print("SVM Classification Report")
+print(classification_report(y_test, svm_pred, zero_division=0))
+
+results = pd.DataFrame({
+  "Model": ["KNN", "SVM"],    
+"Accuracy": [
+        accuracy_score(y_test, knn_pred),
+        accuracy_score(y_test, svm_pred)    
+],    
+"Precision": [
+        precision_score(y_test, knn_pred, zero_division=0),        
+        precision_score(y_test, svm_pred, zero_division=0)    
+],    
+"Recall": [
+        recall_score(y_test, knn_pred, zero_division=0),
+        recall_score(y_test, svm_pred, zero_division=0)    
+],    
+"F1-Score": [
+       f1_score(y_test, knn_pred, zero_division=0),
+        f1_score(y_test, svm_pred, zero_division=0)    
+] })
+ 
+print(results.round(4))
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+for ax, pred, name in zip(
+    axes, [knn_pred, svm_pred], ["KNN", "SVM"]
+):
+    sns.heatmap(
+        confusion_matrix(y_test, pred),
+        annot=True, fmt="d", cmap="Blues", ax=ax
+    )
+    ax.set_title(name)
+    ax.set_xlabel("Predicted Label")
+    ax.set_ylabel("Actual Label")
+plt.tight_layout()
+plt.show()
+
+
+sns.barplot(data=results, x="Model", y="Accuracy")
+plt.title("KNN vs SVM Accuracy")
+plt.ylim(0, 1)
+plt.show()
+
+
+best_model = results.loc[results["F1-Score"].idxmax(), "Model"]
+print("Best model based on F1-score:", best_model)
+print("Model comparison:\n", results.round(4))
+
+
+
+
+
+PRAC NO 8 
+
+
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import MinMaxScaler 
+from sklearn.metrics import accuracy_score, confusion_matrix 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense, Dropout, Input 
+from tensorflow.keras.callbacks import EarlyStopping
+
+
+import urllib.request
+url = "https://raw.githubusercontent.com/GlebTsy/bank-customer-churn-modeling/master/
+urllib.request.urlretrieve(url, "Churn_Modelling.csv")
+print("Dataset downloaded successfully!")
+df = pd.read_csv("Churn_Modelling.csv")
+print("Dataset shape:", df.shape)
+print(df.head())
+print(df["Exited"].value_counts())
+
+X = df.drop(columns=["RowNumber", "CustomerId", "Surname", "Exited"]) y = df["Exited"]
+X = pd.get_dummies(X, drop_first=True, dtype=int)
+print("Features shape:", X.shape) 
+print("Target shape:", y.shape)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y )
+print("Training samples:", X_train.shape[0]) 
+print("Testing samples:", X_test.shape[0])
+
+
+
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train) 
+X_test = scaler.transform(X_test)
+print("Training data normalized successfully.")
+
+
+model = Sequential([
+    Input(shape=(X_train.shape[1],)),
+    Dense(16, activation="relu"),
+    Dropout(0.2),
+    Dense(8, activation="relu"),
+    Dense(1, activation="sigmoid")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"] )
+model.summary()
+
+
+from sklearn.utils.class_weight import compute_class_weight
+classes = np.unique(y_train)
+weights = compute_class_weight(
+    class_weight="balanced",
+    classes=classes,
+    y=y_train )
+class_weights = dict(zip(classes, weights))
+
+early_stop = EarlyStopping(
+    monitor="val_loss", patience=5, restore_best_weights=True
+)
+history = model.fit(    
+X_train, y_train,    
+epochs=50,    
+batch_size=32,    
+validation_split=0.2,    
+callbacks=[early_stop],    
+class_weight=class_weights,    
+verbose=1 )
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+print("Test Loss:", round(loss, 4))
+print("Test Accuracy:", round(accuracy * 100, 2), "%")
+
+from sklearn.metrics import classification_report
+y_prob = model.predict(X_test, verbose=0)
+y_pred = (y_prob >= 0.5).astype(int).ravel()
+print("Actual values:   ", y_test.iloc[:10].to_list()) 
+print("Predicted values:", y_pred[:10]) 
+print("\nClassification Report:\n",      classification_report(y_test, y_pred, zero_division=0))
+print("Confusion Matrix:\n", cm)
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(
+sns.heatmap(    
+cm, annot=True, fmt="d", cmap="Blues",    
+xticklabels=["Stay (0)", "Leave (1)"],    
+yticklabels=["Stay (0)", "Leave (1)"] )
+
+plt.xlabel("Predicted") 
+plt.ylabel("Actual") 
+plt.title("ANN Confusion Matrix") 
+plt.show()
+
+plt.plot(history.history["accuracy"], label="Training Accuracy") plt.plot(history.history["val_accuracy"], label="Validation Accuracy")
+plt.xlabel("Epoch") plt.ylabel("Accuracy") plt.title("ANN Training Performance") plt.legend() plt.show()
+
+
+
+
+
+
+
+
+PRAC NO 9 
+
+
+
+import urllib.request url = "https://raw.githubusercontent.com/SarahShafqat/Kaggle-Datasets/master/diabetes urllib.request.urlretrieve(url, "diabetes.csv") print("Dataset downloaded!")
+import pandas as pd import numpy as np from sklearn.model_selection 
+import train_test_split, GridSearchCV from sklearn.preprocessing 
+import StandardScaler from sklearn.neighbors 
+import KNeighborsClassifier from sklearn.metrics 
+import confusion_matrix, accuracy_score, precision_score, recall
+
+df = pd.read_csv("diabetes.csv") print("Dataset shape:", df.shape) print(df.head()) print(df.columns)
+
+target = "Outcome" if "Outcome" in df.columns else "diabetes" 
+X = df.drop(columns=[target]) 
+y = df[target]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=1, stratify=y
+)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train) 
+X_test = scaler.transform(X_test)
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+pred = knn.predict(X_test)
+acc = accuracy_score(y_test, pred)
+
+print("Confusion Matrix:\n", confusion_matrix(y_test, pred)) 
+print("Accuracy:", acc) 
+print("Error Rate:", 1 - acc) 
+print("Precision:", precision_score(y_test, pred, zero_division=0)) 
+print("Recall:", recall_score(y_test, pred, zero_division=0))
+params = {"n_neighbors": np.arange(1, 26)}
+grid = GridSearchCV(
+    KNeighborsClassifier(), params, cv=5, scoring="accuracy" )
+grid.fit(X_train, y_train)
+print("Best K:", grid.best_params_["n_neighbors"]) print("Best CV Accuracy:", grid.best_score_)
+
+
+best_knn = grid.best_estimator_ 
+best_pred = best_knn.predict(X_test) 
+acc = accuracy_score(y_test, best_pred)
+
+
+
+
+
+
+PRAC NO 10
+
+
+
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+Import seaborn as sns 
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import StandardScaler, OneHotEncoder 
+from sklearn.impute import SimpleImputer 
+from sklearn.compose import ColumnTransformer 
+from sklearn.pipeline import Pipeline 
+from sklearn.linear_model import LogisticRegression 
+from sklearn.tree import DecisionTreeClassifier 
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.svm import SVC 
+from sklearn.metrics import (    accuracy_score, precision_score, recall_score,    f1_score, confusion_matrix, classification_report )
+
+import urllib.request 
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv" urllib.request.urlretrieve(url, "train.csv") 
+print("Dataset downloaded successfully!")
+
+df = pd.read_csv("train.csv") 
+print("Dataset shape:", df.shape) 
+print(df.head()) 
+print("\nData types:\n", df.dtypes) 
+print("\nMissing values:\n", df.isnull().sum()) 
+print("\nDuplicate rows:", df.duplicated().sum()) 
+print("\nSurvival distribution:\n", df["Survived"].value_counts())
+
+# Step 3: Visualize survival count 
+sns.countplot(data=df, x="Survived") plt.title("Survival Count") plt.savefig("survival_count.png") plt.show()
+# Survival rate by gender 
+sns.barplot(data=df, x="Sex", y="Survived") plt.title("Survival Rate by Gender") plt.savefig("survival_by_gender.png") plt.show()
+# Survival rate by passenger class 
+sns.barplot(data=df, x="Pclass", y="Survived") plt.title("Survival Rate by Passenger Class") plt.savefig("survival_by_class.png") plt.show()
+
+# Age distribution by survival 
+sns.histplot(data=df, x="Age", hue="Survived", bins=20, kde=True) plt.title("Age Distribution by Survival") plt.savefig("age_distribution.png") plt.show()
+
+df = df.drop_duplicates().copy()
+df["Title"] = df["Name"].str.extract(r",\s*([^.]*)\.", expand=False) 
+df["FamilySize"] = df["SibSp"] + df["Parch"] + 1 
+df["IsAlone"] = (df["FamilySize"] == 1).astype(int)
+
+X = df.drop(columns=["Survived", "PassengerId", "Name", "Ticket", "Cabin"]) 
+y = df["Survived"]
+num = ["Pclass", "Age", "SibSp", "Parch", "Fare", "FamilySize", "IsAlone"] 
+cat = ["Sex", "Embarked", "Title"]
+
+print("Features:", X.columns.tolist()) 
+print("Target distribution:\n", y.value_counts())
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y )
+num_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler()) ])
+cat_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("encoder", OneHotEncoder(handle_unknown="ignore")) ])
+
+prep = ColumnTransformer([
+    ("num", num_pipe, num),
+    ("cat", cat_pipe, cat)
+])
+
+print("Training samples:", len(X_train))
+print("Testing samples:", len(X_test))
+models = {    
+"Logistic Regression": LogisticRegression(max_iter=1000),    
+"Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),    
+"Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),    
+"KNN": KNeighborsClassifier(n_neighbors=5),    
+"SVM": SVC() }
+
+for name in models:
+    models[name] = Pipeline([("prep", prep), ("clf", models[name])])
+    models[name].fit(X_train, y_train)
+print("All five models trained successfully.")
+results = []
+for name, model in models.items():
+    pred = model.predict(X_test)
+    results.append([
+        name,
+        accuracy_score(y_test, pred),
+        precision_score(y_test, pred, zero_division=0),
+        recall_score(y_test, pred, zero_division=0),
+        f1_score(y_test, pred, zero_division=0)
+    ])
+scores = pd.DataFrame(results, columns=[
+    "Model", "Accuracy", "Precision", "Recall", "F1-score"
+])
+
+print(scores.round(3))
+best_name = scores.loc[scores["F1-score"].idxmax(), "Model"]
+best_model = models[best_name]
+print("\nBest model based on F1-score:", best_name)
+
+
+pred = best_model.predict(X_test)
+print("Classification Report:\n")
+print(classification_report(y_test, pred, zero_division=0))
+sns.heatmap(confusion_matrix(y_test, pred), annot=True,
+            fmt="d", cmap="Blues")
+plt.title("Confusion Matrix") 
+plt.xlabel("Predicted Survival") 
+plt.ylabel("Actual Survival") 
+plt.savefig("confusion_matrix.png") 
+plt.show()
+
+# Step 9: Compare model performance 
+scores.plot(x="Model", y=["Accuracy", "Precision", "Recall", "F1-score"],
+   kind="bar", figsize=(10, 5)) plt.title("Model Performance Comparison") 
+plt.ylabel("Score") 
+plt.xticks(rotation=25, ha="right") 
+plt.tight_layout() 
+plt.savefig("model_comparison.png") 
+plt.show()
+
+
+rf = models["Random Forest"]
+importance = rf.named_steps["clf"].feature_importances_ 
+features = rf.named_steps["prep"].get_feature_names_out()
+imp = pd.Series(importance, index=features).sort_values(ascending=False).head(10) 
+imp.sort_values().plot(kind="barh", figsize=(8, 5))
+plt.title("Random Forest Feature Importance") 
+plt.xlabel("Importance") 
+plt.tight_layout() 
+plt.savefig("feature_importance.png") 
+plt.show()
+sample = X_test.iloc[[0]] 
+print("Passenger details:\n", sample) 
+print("Predicted survival:", "Survived" if prediction == 1 else "Did not survive") 
+print("Actual survival:", "Survived" if y_test.iloc[0] == 1 else "Did not survive")prediction = best_model.predict(sample)[0]
+
