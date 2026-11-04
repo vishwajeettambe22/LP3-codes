@@ -130,51 +130,61 @@ PRAC NO 4
 
 
 
-n = int(input("Enter the numbers of items: "))
+N = 8 
 
-profit = []
-weight = []
-ratio = []
+board = [[0 for _ in range(N)] for _ in range(N)]
 
-for i in range(n):
-    print()
-    p = float(input("Enter Profit of item " + str(i+1) + " : "))
-    w = float(input("Enter Weight of item " + str(i+1) + " : "))
+def is_safe(row, col):
+    for i in range(row):
+        if board[i][col] == 1:
+            return False
+        
+    i,j = row-1,col-1
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1 :
+            return False
+        i -= 1
+        j -= 1
 
-    profit.append(p)
-    weight.append(w)
+    i,j = row -1, col+1
+    while i >= 0 and j < N:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j += 1
 
-    ratio.append(p / w)
+    return True
+
+def solve(row):
+
+    if row == N:
+        return True
+
+    for col in range(N):
+        if is_safe(row,col):
+            board[row][col] = 1
+
+            if solve(row +1):
+                return True
+
+            board[row][col] = 0
+    return False
+
+board[0][0] = 1
+
+if solve(1):
+    print("The matrix of 8 Queen: ")
+    for row in board:
+        print(*row)
+
+else: 
+    print("No solution exists")
 
 
-# Sorting according to profit/weight ratio
-for i in range(n-1):
-    for j in range(i+1, n):
-        if ratio[i] < ratio[j]:
-
-            ratio[i], ratio[j] = ratio[j], ratio[i]
-            profit[i], profit[j] = profit[j], profit[i]
-            weight[i], weight[j] = weight[j], weight[i]
 
 
-print()
-capacity = float(input("Enter the capacity: "))
 
-maxprofit = 0
-
-for i in range(n):
-
-    if capacity >= weight[i]:
-        maxprofit += profit[i]
-        capacity -= weight[i]
-
-    else:
-        maxprofit += ratio[i] * capacity
-        break
-
-
-print()
-print("Maximum profit:", maxprofit)
+  
 
 
 
